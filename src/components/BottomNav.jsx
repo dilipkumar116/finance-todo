@@ -1,10 +1,10 @@
 import { motion } from 'framer-motion';
-import { HiCash, HiClipboardList, HiCog } from '../utils/icons';
+import { HiRupee, HiNotebook, HiCog } from '../utils/icons';
 
 export default function BottomNav({ activeTab, setActiveTab }) {
   const tabs = [
-    { id: 'finance', label: 'Finance', icon: HiCash },
-    { id: 'todo', label: 'To Do', icon: HiClipboardList },
+    { id: 'finance', label: 'Finance', icon: HiRupee },
+    { id: 'todo', label: 'To Do', icon: HiNotebook },
     { id: 'settings', label: 'Settings', icon: HiCog },
   ];
 
@@ -22,11 +22,13 @@ export default function BottomNav({ activeTab, setActiveTab }) {
                          transition-colors duration-150"
             >
               {isActive && (
-                <motion.div
-                  layoutId="activeTab"
-                  className="absolute top-0 left-1/2 -translate-x-1/2 w-12 h-[3px] rounded-full bg-accent-green"
-                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
-                />
+                <div className="absolute top-0 inset-x-0 flex justify-center">
+                  <motion.div
+                    layoutId="activeTab"
+                    className="w-12 h-[3px] rounded-full bg-accent-green"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                </div>
               )}
               <Icon
                 className={`w-6 h-6 transition-colors duration-150 ${
