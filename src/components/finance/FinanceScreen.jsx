@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiChartBar, HiClock } from 'react-icons/hi';
+import { HiChartBar, HiClock } from '../../utils/icons';
 import ExpenseSummaryCard from './ExpenseSummaryCard';
 import AddExpenseCard from './AddExpenseCard';
 import RecentExpenses from './RecentExpenses';

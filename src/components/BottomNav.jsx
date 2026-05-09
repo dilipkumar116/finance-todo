@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { HiCash, HiClipboardList, HiCog } from 'react-icons/hi';
+import { HiCash, HiClipboardList, HiCog } from '../utils/icons';
 
 export default function BottomNav({ activeTab, setActiveTab }) {
   const tabs = [

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiDotsVertical } from 'react-icons/hi';
+import { HiDotsVertical } from '../../utils/icons';
 import SearchBar from './SearchBar';
 import TaskGrid from './TaskGrid';
 import AddTaskModal from './AddTaskModal';

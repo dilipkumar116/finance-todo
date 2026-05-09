@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiDownload, HiUpload, HiBell, HiPencil, HiTrash, HiCheck } from 'react-icons/hi';
+import { HiDownload, HiUpload, HiBell, HiPencil, HiTrash, HiCheck } from '../utils/icons';
 import useFinanceStore from '../stores/useFinanceStore';
 import useTodoStore from '../stores/useTodoStore';
 import { exportData, importData } from '../utils/helpers';

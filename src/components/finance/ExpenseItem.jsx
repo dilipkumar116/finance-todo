@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryIcon, getCategoryById } from '../../utils/categories';
 import { formatCurrency, formatTimeAgo } from '../../utils/helpers';
 import useFinanceStore from '../../stores/useFinanceStore';
-import { HiTrash, HiDotsVertical, HiX } from 'react-icons/hi';
+import { HiTrash, HiDotsVertical, HiX } from '../../utils/icons';
 
 export default function ExpenseItem({ expense }) {
   const categories = useFinanceStore((s) => s.categories);

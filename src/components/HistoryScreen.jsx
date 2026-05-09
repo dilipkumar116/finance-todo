@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiArrowLeft, HiCalendar, HiListBullet, HiChevronLeft, HiChevronRight, HiPlus } from 'react-icons/hi2';
+import { HiArrowLeft, HiCalendar, HiListBullet, HiChevronLeft, HiChevronRight, HiPlus } from '../utils/icons';
 import useFinanceStore, { getFilteredExpenses, getTotalSpent } from '../stores/useFinanceStore';
 import { formatCurrency } from '../utils/helpers';
 import ExpenseItem from './finance/ExpenseItem';

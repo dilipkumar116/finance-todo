@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus } from '../../utils/icons';
 import useFinanceStore from '../../stores/useFinanceStore';
 import { getCategoryById } from '../../utils/categories';
 

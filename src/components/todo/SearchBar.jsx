@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiSearch, HiX } from 'react-icons/hi';
+import { HiSearch, HiX } from '../../utils/icons';
 import useTodoStore from '../../stores/useTodoStore';
 
 export default function SearchBar() {

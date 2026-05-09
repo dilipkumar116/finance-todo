@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiArrowLeft, HiTrash, HiPlus, HiCheck, HiX, HiClock } from 'react-icons/hi';
-import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs';
+import { HiArrowLeft, HiTrash, HiPlus, HiCheck, HiX, HiClock } from '../../utils/icons';
+import { BsPinAngle, BsPinAngleFill } from '../../utils/icons';
 import useTodoStore from '../../stores/useTodoStore';
 
 export default function TaskDetailScreen({ task, onClose }) {

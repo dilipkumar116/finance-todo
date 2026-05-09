@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs';
+import { BsPinAngle, BsPinAngleFill } from '../../utils/icons';
 import useTodoStore from '../../stores/useTodoStore';
 
 export default function TaskCard({ task, onClick }) {

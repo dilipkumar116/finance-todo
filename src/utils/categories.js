@@ -1,6 +1,6 @@
-import { HiShoppingBag, HiTruck, HiFilm, HiLightningBolt, HiHome, HiDotsHorizontal, HiHeart, HiAcademicCap, HiCash } from 'react-icons/hi';
-import { IoFastFood, IoGameController } from 'react-icons/io5';
-import { MdHealthAndSafety } from 'react-icons/md';
+import { HiShoppingBag, HiTruck, HiFilm, HiLightningBolt, HiHome, HiDotsHorizontal, HiHeart, HiAcademicCap, HiCash } from './icons';
+import { IoFastFood, IoGameController } from './icons';
+import { MdHealthAndSafety } from './icons';
 
 export const DEFAULT_CATEGORIES = [
   { id: 'food', name: 'Food', icon: 'IoFastFood', color: '#05E099' }, // Vibrant Mint

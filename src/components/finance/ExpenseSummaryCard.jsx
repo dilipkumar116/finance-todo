@@ -1,9 +1,10 @@
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import useFinanceStore, { getFilteredExpenses, getCategoryTotals, getTotalSpent } from '../../stores/useFinanceStore';
 import { formatCurrency } from '../../utils/helpers';
 import { FILTER_OPTIONS } from '../../utils/categories';
 import Dropdown from '../shared/Dropdown';
-import DoughnutChart from './DoughnutChart';
+const DoughnutChart = lazy(() => import('./DoughnutChart'));
 
 export default function ExpenseSummaryCard() {
   const expenses = useFinanceStore((s) => s.expenses);
@@ -39,7 +40,9 @@ export default function ExpenseSummaryCard() {
 
       {/* Chart */}
       <div className="relative mb-8">
-        <DoughnutChart />
+        <Suspense fallback={<div className="w-[240px] h-[240px] mx-auto rounded-full bg-surface/30 animate-pulse" />}>
+          <DoughnutChart />
+        </Suspense>
       </div>
 
       {/* Legend - Improved Layout */}

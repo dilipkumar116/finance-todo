@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiX } from 'react-icons/hi';
+import { HiX } from '../../utils/icons';
 import useFinanceStore from '../../stores/useFinanceStore';
 
 export default function AddExpenseModal({ open, onClose, defaultDate }) {

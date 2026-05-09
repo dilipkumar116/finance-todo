@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiX, HiPlus, HiTrash, HiBell } from 'react-icons/hi';
-import { BsPinAngle, BsPinAngleFill } from 'react-icons/bs';
+import { HiX, HiPlus, HiTrash, HiBell } from '../../utils/icons';
+import { BsPinAngle, BsPinAngleFill } from '../../utils/icons';
 import useTodoStore from '../../stores/useTodoStore';
 import { TASK_COLORS } from '../../utils/categories';
 

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus } from '../../utils/icons';
 
 export default function FAB({ onClick }) {
   return (

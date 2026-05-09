@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { HiArrowLeft, HiArrowUp, HiArrowDown, HiTrendingUp } from 'react-icons/hi';
+import { HiArrowLeft, HiArrowUp, HiArrowDown, HiTrendingUp } from '../../utils/icons';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,

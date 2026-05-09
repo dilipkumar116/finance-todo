@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiTrash, HiCheckCircle, HiX } from 'react-icons/hi';
+import { HiTrash, HiCheckCircle, HiX } from '../../utils/icons';
 import useTodoStore from '../../stores/useTodoStore';
 
 export default function TodoMenu({ open, onClose }) {
