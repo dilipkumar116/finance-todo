@@ -5,6 +5,7 @@ import useFinanceStore from '../stores/useFinanceStore';
 import useTodoStore from '../stores/useTodoStore';
 import { exportData, importData } from '../utils/helpers';
 import { CATEGORY_ICONS, DEFAULT_CATEGORIES } from '../utils/categories';
+import CategorySafetyModal from './finance/CategorySafetyModal';
 
 export default function SettingsScreen() {
   const financeStore = useFinanceStore();
@@ -12,6 +13,8 @@ export default function SettingsScreen() {
   const fileInputRef = useRef(null);
   const [importStatus, setImportStatus] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
+  const [deletingCategory, setDeletingCategory] = useState(null);
+  const [safetyAction, setSafetyAction] = useState(null); // { mode: 'edit'|'delete', category, newData }
   const [notifPermission, setNotifPermission] = useState(Notification.permission);
 
   const handleExport = () => {
@@ -109,9 +112,17 @@ export default function SettingsScreen() {
                       return <Icon className="w-4 h-4" style={{ color: cat.color }} />;
                     })()}
                   </div>
-                  <button onClick={() => setEditingCategory(cat)} className="p-1.5 rounded-md hover:bg-white/5 transition-colors">
-                    <HiPencil className="w-3.5 h-3.5 text-text-muted" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button onClick={() => setEditingCategory(cat)} className="p-1.5 rounded-md hover:bg-white/5 transition-colors">
+                      <HiPencil className="w-3.5 h-3.5 text-text-muted" />
+                    </button>
+                    <button 
+                      onClick={() => setDeletingCategory(cat)} 
+                      className="p-1.5 rounded-md hover:bg-accent-red/10 transition-colors"
+                    >
+                      <HiTrash className="w-3.5 h-3.5 text-accent-red" />
+                    </button>
+                  </div>
                 </div>
                 <p className="text-xs font-medium text-text-primary truncate">{cat.name}</p>
               </div>
@@ -166,7 +177,11 @@ export default function SettingsScreen() {
                   >Cancel</button>
                   <button 
                     onClick={() => {
-                      financeStore.editCategory(editingCategory.id, editingCategory);
+                      setSafetyAction({ 
+                        mode: 'edit', 
+                        category: financeStore.categories.find(c => c.id === editingCategory.id), 
+                        newData: editingCategory 
+                      });
                       setEditingCategory(null);
                     }} 
                     className="flex-1 py-2.5 rounded-btn bg-accent-green text-primary text-sm font-bold"
@@ -175,6 +190,20 @@ export default function SettingsScreen() {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+      {/* Unified Safety Modal (for both Edit and Delete) */}
+      <AnimatePresence>
+        {(safetyAction || deletingCategory) && (
+          <CategorySafetyModal 
+            mode={safetyAction ? safetyAction.mode : 'delete'}
+            category={safetyAction ? safetyAction.category : deletingCategory}
+            newData={safetyAction ? safetyAction.newData : null}
+            onClose={() => {
+              setSafetyAction(null);
+              setDeletingCategory(null);
+            }} 
+          />
         )}
       </AnimatePresence>
     </motion.div>

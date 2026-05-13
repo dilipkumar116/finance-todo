@@ -1,0 +1,18 @@
+{
+  "name": "FinanceTodo",
+  "short_name": "FinanceTodo",
+  "description": "Premium dark-themed productivity app — track finances and manage tasks with style.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

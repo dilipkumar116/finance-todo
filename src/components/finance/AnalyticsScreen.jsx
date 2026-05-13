@@ -26,7 +26,7 @@ ChartJS.register(
   Filler
 );
 
-export default function AnalyticsScreen({ onClose }) {
+export default function AnalyticsScreen({ onClose, inline = false }) {
   const expenses = useFinanceStore((s) => s.expenses);
   const categories = useFinanceStore((s) => s.categories);
 
@@ -75,22 +75,24 @@ export default function AnalyticsScreen({ onClose }) {
 
   return (
     <motion.div
-      initial={{ y: '100%' }}
-      animate={{ y: 0 }}
-      exit={{ y: '100%' }}
+      initial={inline ? { opacity: 1 } : { y: '100%' }}
+      animate={inline ? { opacity: 1 } : { y: 0 }}
+      exit={inline ? { opacity: 1 } : { y: '100%' }}
       transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      className="fixed inset-0 z-[100] bg-primary flex flex-col"
+      className={inline ? "flex flex-col h-full" : "fixed inset-0 z-[100] bg-primary flex flex-col"}
     >
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-card">
-        <div className="flex items-center gap-3">
-          <button onClick={onClose} className="p-2 -ml-2 rounded-xl hover:bg-white/5">
-            <HiArrowLeft className="w-6 h-6 text-text-primary" />
-          </button>
-          <h2 className="text-lg font-bold text-text-primary">Advanced Analytics</h2>
+      {!inline && (
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border bg-card">
+          <div className="flex items-center gap-3">
+            <button onClick={onClose} className="p-2 -ml-2 rounded-xl hover:bg-white/5">
+              <HiArrowLeft className="w-6 h-6 text-text-primary" />
+            </button>
+            <h2 className="text-lg font-bold text-text-primary">Advanced Analytics</h2>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6 no-scrollbar pb-24">
+      <div className={`flex-1 ${!inline ? 'overflow-y-auto p-5 no-scrollbar pb-24' : ''} space-y-6`}>
         {/* Weekly Trend */}
         <div className="bg-card border border-border p-5 rounded-card">
           <div className="flex items-center justify-between mb-4">

@@ -58,6 +58,37 @@ const useFinanceStore = create(
         }));
       },
 
+      // Robust category deletion with transaction handling
+      processCategoryDelete: (sourceId, action, targetId = null, newCategory = null) => {
+        set((state) => {
+          let updatedExpenses = [...state.expenses];
+          let updatedCategories = [...state.categories];
+
+          if (action === 'delete_transactions') {
+            updatedExpenses = updatedExpenses.filter(e => e.category !== sourceId);
+          } else if (action === 'move_to_existing') {
+            updatedExpenses = updatedExpenses.map(e => 
+              e.category === sourceId ? { ...e, category: targetId } : e
+            );
+          } else if (action === 'move_to_new' && newCategory) {
+            const newCatId = generateId();
+            const createdCategory = { id: newCatId, ...newCategory };
+            updatedCategories.push(createdCategory);
+            updatedExpenses = updatedExpenses.map(e => 
+              e.category === sourceId ? { ...e, category: newCatId } : e
+            );
+          }
+
+          // Finally remove the old category
+          updatedCategories = updatedCategories.filter(c => c.id !== sourceId);
+
+          return {
+            expenses: updatedExpenses,
+            categories: updatedCategories
+          };
+        });
+      },
+
       importFinanceData: (data) => {
         set({
           expenses: data.expenses || [],

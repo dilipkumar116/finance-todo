@@ -16,7 +16,7 @@ export default function RecentExpenses() {
       </div>
 
       {recentExpenses.length === 0 ? (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="py-12 text-center"

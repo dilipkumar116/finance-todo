@@ -1,16 +1,13 @@
-# React + Vite
+# 💎 Premium Productivity Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A state-of-the-art personal finance and task management application built with **React**, **Vite**, and **Tailwind CSS**. Designed for speed, data integrity, and a premium aesthetic.
 
-Currently, two official plugins are available:
+## 🚀 Key Features
+- **Finance Hub**: A 4-tab navigation system (Home, List, Calendar, Analytics) for instant insight into your spending.
+- **Smart Tasks**: Modular Todo system with search and category filtering.
+- **Data Integrity**: Multi-step safety protocols for category management with mandatory automated backups.
+- **Visual Analytics**: Interactive charts and trend analysis using Chart.js.
+- **Premium UI**: Sleek dark mode, glassmorphism effects, and smooth Framer Motion transitions.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 📦 Deployment
+Built for **GitHub Pages**. The production build is hosted in the `/docs` folder.
