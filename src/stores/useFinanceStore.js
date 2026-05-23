@@ -8,7 +8,7 @@ const useFinanceStore = create(
     (set, get) => ({
       expenses: [],
       categories: [...DEFAULT_CATEGORIES],
-      filter: 'Last Month',
+      filter: 'This Month',
 
       addExpense: (expense) => {
         const newExpense = {
@@ -99,6 +99,7 @@ const useFinanceStore = create(
     {
       name: 'finance-storage',
       version: 2,
+      partialize: (state) => ({ expenses: state.expenses, categories: state.categories }),
       migrate: (persistedState, version) => {
         if (version < 2) {
           // Force update to the new default categories with vibrant colors
@@ -111,7 +112,8 @@ const useFinanceStore = create(
 );
 
 // Derived data helpers (not selectors — call these in components)
-export function getFilteredExpenses(expenses, filter) {
+export function getFilteredExpenses(expenses = [], filter) {
+  if (!expenses) return [];
   const { start, end } = getFilterDateRange(filter);
   return expenses.filter((e) => {
     const date = new Date(e.createdAt);
@@ -119,8 +121,8 @@ export function getFilteredExpenses(expenses, filter) {
   });
 }
 
-export function getCategoryTotals(categories, filteredExpenses) {
-  if (!categories || !filteredExpenses) return [];
+export function getCategoryTotals(categories = [], filteredExpenses = []) {
+  if (!categories || !categories.length || !filteredExpenses) return [];
   
   const totals = {};
   categories.forEach((cat) => { totals[cat.id] = 0; });

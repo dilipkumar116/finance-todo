@@ -10,14 +10,14 @@ import { formatCurrency } from '../../utils/helpers';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function DoughnutChart() {
+export default function DoughnutChart({ customCategoryTotals, customTotalSpent }) {
   const expenses = useFinanceStore((s) => s.expenses);
   const categories = useFinanceStore((s) => s.categories);
   const filter = useFinanceStore((s) => s.filter);
 
   const filteredExpenses = getFilteredExpenses(expenses, filter);
-  const categoryTotals = getCategoryTotals(categories, filteredExpenses);
-  const totalSpent = getTotalSpent(filteredExpenses);
+  const categoryTotals = customCategoryTotals || getCategoryTotals(categories, filteredExpenses);
+  const totalSpent = customTotalSpent !== undefined ? customTotalSpent : getTotalSpent(filteredExpenses);
 
   const hasData = categoryTotals.length > 0;
 

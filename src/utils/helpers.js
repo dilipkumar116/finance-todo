@@ -74,28 +74,52 @@ export const getFilterDateRange = (filter) => {
   const now = new Date();
   const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  switch (filter) {
-    case 'Today':
-      return { start: startOfDay, end: now };
-    case 'Last Week': {
-      const start = new Date(startOfDay);
-      start.setDate(start.getDate() - 7);
-      return { start, end: now };
-    }
-    case 'Last Month': {
-      const start = new Date(startOfDay);
-      start.setMonth(start.getMonth() - 1);
-      return { start, end: now };
-    }
-    case 'Last Year': {
-      const start = new Date(startOfDay);
-      start.setFullYear(start.getFullYear() - 1);
-      return { start, end: now };
-    }
-    case 'Overall':
-    default:
-      return { start: new Date(0), end: now };
+  if (filter === 'Today') {
+    return { start: startOfDay, end: now };
   }
+  if (filter === 'This Week') {
+    const start = new Date(startOfDay);
+    const day = start.getDay();
+    const diff = start.getDate() - day + (day === 0 ? -6 : 1); // Monday as start
+    start.setDate(diff);
+    return { start, end: now };
+  }
+  if (filter === 'Last Week') {
+    const start = new Date(startOfDay);
+    start.setDate(start.getDate() - 7);
+    return { start, end: now };
+  }
+  if (filter === 'This Month') {
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    return { start, end: now };
+  }
+  if (filter === 'Last Month') {
+    const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const end = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+    return { start, end };
+  }
+  if (filter === 'Last Year') {
+    const start = new Date(startOfDay);
+    start.setFullYear(start.getFullYear() - 1);
+    return { start, end: now };
+  }
+  if (filter === 'Overall') {
+    return { start: new Date(0), end: now };
+  }
+
+  // Parse month string e.g. "April 2026"
+  const parsed = new Date(filter);
+  if (!isNaN(parsed)) {
+    const start = new Date(parsed.getFullYear(), parsed.getMonth(), 1);
+    const end = new Date(parsed.getFullYear(), parsed.getMonth() + 1, 0, 23, 59, 59, 999);
+    return { start, end };
+  }
+
+  return { start: new Date(0), end: now };
+};
+
+export const getDynamicFilterOptions = () => {
+  return ['This Month', 'This Week', 'Last Month', 'Overall'];
 };
 
 export const scheduleNotification = (taskId, title, body, date, recurring = false) => {

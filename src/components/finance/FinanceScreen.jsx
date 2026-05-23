@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiHome, HiChartBar, HiListBullet, HiCalendar } from '../../utils/icons';
+import { HiHome, HiChartBar, HiListBullet, HiCalendar, HiPlus } from '../../utils/icons';
 import ExpenseSummaryCard from './ExpenseSummaryCard';
 import AddExpenseCard from './AddExpenseCard';
+import AddExpenseModal from './AddExpenseModal';
 import RecentExpenses from './RecentExpenses';
-import HistoryScreen from '../HistoryScreen';
-import AnalyticsScreen from './AnalyticsScreen';
+
+const HistoryScreen = lazy(() => import('../HistoryScreen'));
+const AnalyticsScreen = lazy(() => import('./AnalyticsScreen'));
 
 export default function FinanceScreen() {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'list', 'calendar', 'analytics'
+  const [addModalOpen, setAddModalOpen] = useState(false);
 
   const tabs = [
     { id: 'overview', icon: HiHome, label: 'Home' },
     { id: 'list', icon: HiListBullet, label: 'List' },
     { id: 'calendar', icon: HiCalendar, label: 'Calendar' },
-    { id: 'analytics', icon: HiChartBar, label: 'Analytics' },
+    { id: 'analytics', icon: HiChartBar, label: 'Analysis' },
   ];
 
   return (
@@ -27,7 +30,9 @@ export default function FinanceScreen() {
       {/* Fixed Header with 4 Navigation Icons */}
       <div className="px-5 pt-5 pb-4 bg-primary/80 backdrop-blur-md sticky top-0 z-10">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-text-primary">Finance</h1>
+          <h1 className="text-2xl font-bold text-text-primary">
+            {tabs.find(t => t.id === activeTab)?.label || 'Finance'}
+          </h1>
           
           <div className="flex bg-surface p-1 rounded-xl border border-border shadow-inner">
             {tabs.map((tab) => {
@@ -82,7 +87,9 @@ export default function FinanceScreen() {
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.15 }}
             >
-              <HistoryScreen inline initialView="list" />
+              <Suspense fallback={<div className="p-8 text-center"><div className="w-6 h-6 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+                <HistoryScreen inline initialView="list" />
+              </Suspense>
             </motion.div>
           )}
 
@@ -94,7 +101,9 @@ export default function FinanceScreen() {
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.15 }}
             >
-              <HistoryScreen inline initialView="calendar" />
+              <Suspense fallback={<div className="p-8 text-center"><div className="w-6 h-6 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+                <HistoryScreen inline initialView="calendar" />
+              </Suspense>
             </motion.div>
           )}
 
@@ -106,11 +115,25 @@ export default function FinanceScreen() {
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.15 }}
             >
-              <AnalyticsScreen inline />
+              <Suspense fallback={<div className="p-8 text-center"><div className="w-6 h-6 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+                <AnalyticsScreen inline />
+              </Suspense>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+
+
+      <AnimatePresence>
+        {addModalOpen && (
+          <AddExpenseModal
+            open={addModalOpen}
+            onClose={() => setAddModalOpen(false)}
+            defaultDate={new Date()}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

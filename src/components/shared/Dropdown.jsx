@@ -42,7 +42,7 @@ export default function Dropdown({ options, value, onChange, placeholder = 'Sele
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 z-50 min-w-[160px]
+            className="absolute right-0 top-full mt-2 z-50 min-w-[160px] max-h-[250px] overflow-y-auto no-scrollbar
                        rounded-card bg-card border border-border shadow-dropdown overflow-hidden"
           >
             {options.map((option) => (

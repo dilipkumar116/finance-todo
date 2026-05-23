@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { HiArrowLeft, HiArrowUp, HiArrowDown, HiTrendingUp } from '../../utils/icons';
 import { Bar, Line } from 'react-chartjs-2';
@@ -30,14 +31,16 @@ export default function AnalyticsScreen({ onClose, inline = false }) {
   const expenses = useFinanceStore((s) => s.expenses);
   const categories = useFinanceStore((s) => s.categories);
 
-  const categoryTotals = getCategoryTotals(categories, expenses)
-    .sort((a, b) => b.total - a.total);
-  const weeklyTrend = getWeeklyTrend(expenses);
+  const categoryTotals = useMemo(() => {
+    return getCategoryTotals(categories, expenses).sort((a, b) => b.total - a.total);
+  }, [categories, expenses]);
 
-  const totalSpent = categoryTotals.reduce((s, c) => s + (c.total || 0), 0);
+  const weeklyTrend = useMemo(() => getWeeklyTrend(expenses), [expenses]);
+
+  const totalSpent = useMemo(() => categoryTotals.reduce((s, c) => s + (c.total || 0), 0), [categoryTotals]);
   const highestExpense = categoryTotals[0];
 
-  const barData = {
+  const barData = useMemo(() => ({
     labels: categoryTotals.map(c => c.name),
     datasets: [{
       label: 'Spending',
@@ -47,9 +50,9 @@ export default function AnalyticsScreen({ onClose, inline = false }) {
       borderWidth: 1,
       borderRadius: 8,
     }]
-  };
+  }), [categoryTotals]);
 
-  const lineData = {
+  const lineData = useMemo(() => ({
     labels: weeklyTrend.map(w => w.date),
     datasets: [{
       label: 'Daily Spending',
@@ -61,17 +64,17 @@ export default function AnalyticsScreen({ onClose, inline = false }) {
       pointRadius: 4,
       pointBackgroundColor: '#10B981',
     }]
-  };
+  }), [weeklyTrend]);
 
-  const commonOptions = {
+  const commonOptions = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: { legend: { display: false } },
     scales: {
       x: { grid: { display: false }, ticks: { color: '#94A3B8', font: { size: 10 } } },
-      y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8', font: { size: 10 } } }
+      y: { grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { color: '#94A3B8', font: { size: 10 } } }
     }
-  };
+  }), []);
 
   return (
     <motion.div

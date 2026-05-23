@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import useFinanceStore, { getFilteredExpenses, getCategoryTotals, getTotalSpent } from '../../stores/useFinanceStore';
-import { formatCurrency } from '../../utils/helpers';
-import { FILTER_OPTIONS } from '../../utils/categories';
+import { formatCurrency, getDynamicFilterOptions } from '../../utils/helpers';
 import Dropdown from '../shared/Dropdown';
 const DoughnutChart = lazy(() => import('./DoughnutChart'));
 
@@ -18,9 +17,11 @@ export default function ExpenseSummaryCard() {
   const totalSpent = getTotalSpent(filteredExpenses);
 
   return (
-    <div className="glass rounded-card p-6 shadow-card border border-white/5 relative overflow-hidden">
+    <div className="glass rounded-card p-6 shadow-card border border-white/5 relative">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-accent-green/5 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none" />
+      <div className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-accent-green/5 blur-3xl rounded-full -mr-16 -mt-16" />
+      </div>
 
       {/* Header Row */}
       <div className="flex items-start justify-between relative z-10 mb-6">
@@ -35,7 +36,7 @@ export default function ExpenseSummaryCard() {
             {formatCurrency(totalSpent)}
           </motion.p>
         </div>
-        <Dropdown options={FILTER_OPTIONS} value={filter} onChange={setFilter} />
+        <Dropdown options={getDynamicFilterOptions()} value={filter} onChange={setFilter} />
       </div>
 
       {/* Chart */}
