@@ -2,23 +2,20 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiDownload, HiUpload, HiBell, HiPencil, HiTrash, HiCheck } from '../utils/icons';
 import useFinanceStore from '../stores/useFinanceStore';
-import useTodoStore from '../stores/useTodoStore';
 import { exportData, importData } from '../utils/helpers';
 import { CATEGORY_ICONS, DEFAULT_CATEGORIES } from '../utils/categories';
 import CategorySafetyModal from './finance/CategorySafetyModal';
 
 export default function SettingsScreen() {
   const financeStore = useFinanceStore();
-  const todoStore = useTodoStore();
   const fileInputRef = useRef(null);
   const [importStatus, setImportStatus] = useState('');
   const [editingCategory, setEditingCategory] = useState(null);
   const [deletingCategory, setDeletingCategory] = useState(null);
   const [safetyAction, setSafetyAction] = useState(null); // { mode: 'edit'|'delete', category, newData }
-  const [notifPermission, setNotifPermission] = useState(Notification.permission);
 
   const handleExport = () => {
-    exportData(financeStore, todoStore);
+    exportData(financeStore);
     setImportStatus('Data exported!');
     setTimeout(() => setImportStatus(''), 2000);
   };
@@ -29,7 +26,6 @@ export default function SettingsScreen() {
     try {
       const data = await importData(file);
       financeStore.importFinanceData(data.finance);
-      todoStore.importTodoData(data.todo);
       setImportStatus('Data imported successfully!');
       setTimeout(() => setImportStatus(''), 2000);
     } catch (err) {
@@ -39,10 +35,6 @@ export default function SettingsScreen() {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const requestNotifPermission = async () => {
-    const permission = await Notification.requestPermission();
-    setNotifPermission(permission);
-  };
 
   return (
     <motion.div
@@ -78,26 +70,6 @@ export default function SettingsScreen() {
           </div>
         </section>
 
-        {/* Notifications */}
-        <section>
-          <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Notifications</h3>
-          <button 
-            onClick={requestNotifPermission}
-            disabled={notifPermission === 'granted'}
-            className="w-full flex items-center justify-between px-4 py-3 rounded-btn bg-card border border-border hover:bg-card-hover transition-colors disabled:opacity-60"
-          >
-            <div className="flex items-center gap-3">
-              <HiBell className={`w-5 h-5 ${notifPermission === 'granted' ? 'text-accent-green' : 'text-text-muted'}`} />
-              <div className="text-left">
-                <p className="text-sm font-medium text-text-primary">Push Notifications</p>
-                <p className="text-[10px] text-text-muted">Required for task reminders</p>
-              </div>
-            </div>
-            <span className={`text-[10px] px-2 py-0.5 rounded-full ${notifPermission === 'granted' ? 'bg-accent-green/20 text-accent-green' : 'bg-surface text-text-muted'}`}>
-              {notifPermission === 'granted' ? 'Enabled' : 'Request'}
-            </span>
-          </button>
-        </section>
 
         {/* Categories */}
         <section>
@@ -154,6 +126,27 @@ export default function SettingsScreen() {
                   />
                 </div>
                 <div>
+                  <label className="text-xs text-text-muted mb-1 block">Color</label>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="color" 
+                      value={editingCategory.color} 
+                      onChange={(e) => setEditingCategory({...editingCategory, color: e.target.value})}
+                      className="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0 shadow-lg"
+                    />
+                    <div className="flex gap-2">
+                      {['#05E099', '#FFD166', '#FF3366', '#00C2FF', '#FF007F', '#BB86FC'].map(c => (
+                        <button 
+                          key={c}
+                          onClick={() => setEditingCategory({...editingCategory, color: c})}
+                          className={`w-6 h-6 rounded-full border-2 transition-transform ${editingCategory.color === c ? 'border-white scale-110 shadow-glow-white' : 'border-transparent hover:scale-105'}`}
+                          style={{ backgroundColor: c }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div>
                   <label className="text-xs text-text-muted mb-1 block">Icon</label>
                   <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto no-scrollbar p-1">
                     {Object.keys(CATEGORY_ICONS).map((iconName) => {
@@ -177,11 +170,7 @@ export default function SettingsScreen() {
                   >Cancel</button>
                   <button 
                     onClick={() => {
-                      setSafetyAction({ 
-                        mode: 'edit', 
-                        category: financeStore.categories.find(c => c.id === editingCategory.id), 
-                        newData: editingCategory 
-                      });
+                      financeStore.editCategory(editingCategory.id, editingCategory);
                       setEditingCategory(null);
                     }} 
                     className="flex-1 py-2.5 rounded-btn bg-accent-green text-primary text-sm font-bold"

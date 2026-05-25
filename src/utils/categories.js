@@ -1,18 +1,23 @@
-import { HiShoppingBag, HiTruck, HiFilm, HiLightningBolt, HiHome, HiDotsHorizontal, HiHeart, HiAcademicCap, HiCash } from './icons';
+import { HiShoppingBag, HiTruck, HiFilm, HiLightningBolt, HiHome, HiDotsHorizontal, HiHeart, HiAcademicCap, HiCash, HiVideoCamera, HiUsers, HiPopcorn, HiX } from './icons';
 import { IoFastFood, IoGameController } from './icons';
-import { MdHealthAndSafety } from './icons';
+import { MdHealthAndSafety, MdRestaurant } from './icons';
 
 export const DEFAULT_CATEGORIES = [
-  { id: 'food', name: 'Food', icon: 'IoFastFood', color: '#05E099' }, // Vibrant Mint
-  { id: 'snacks', name: 'Snacks', icon: 'HiHeart', color: '#FFD166' }, // Golden Peach
-  { id: 'x', name: 'X', icon: 'HiLightningBolt', color: '#FF3366' }, // Neon Crimson
-  { id: 'friends', name: 'Friends', icon: 'HiDotsHorizontal', color: '#00C2FF' }, // Electric Cyan
+  { id: 'food', name: 'Food', icon: 'MdRestaurant', color: '#05E099' }, // Vibrant Mint
+  { id: 'snacks', name: 'Snacks', icon: 'HiPopcorn', color: '#FFD166' }, // Golden Peach
+  { id: 'x', name: 'X', icon: 'HiX', color: '#FF3366' }, // Neon Crimson
+  { id: 'friends', name: 'Friends', icon: 'HiUsers', color: '#00C2FF' }, // Electric Cyan
   { id: 'family', name: 'Family', icon: 'HiHome', color: '#FF007F' }, // Sunset Pink
-  { id: 'entertainment', name: 'Entertainment', icon: 'HiFilm', color: '#BB86FC' }, // Amethyst
+  { id: 'entertainment', name: 'Entertainment', icon: 'HiVideoCamera', color: '#BB86FC' }, // Amethyst
   { id: 'others', name: 'Others', icon: 'HiDotsHorizontal', color: '#A0AAB2' }, // Sleek Silver
 ];
 
 export const CATEGORY_ICONS = {
+  MdRestaurant,
+  HiPopcorn,
+  HiX,
+  HiUsers,
+  HiVideoCamera,
   IoFastFood,
   HiTruck,
   HiShoppingBag,

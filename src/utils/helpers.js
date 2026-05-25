@@ -1,13 +1,10 @@
-export const exportData = (financeState, todoState) => {
+export const exportData = (financeState) => {
   const data = {
     version: 1,
     exportedAt: new Date().toISOString(),
     finance: {
       expenses: financeState.expenses,
       categories: financeState.categories,
-    },
-    todo: {
-      tasks: todoState.tasks,
     },
   };
 
@@ -28,7 +25,7 @@ export const importData = (file) => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        if (!data.version || !data.finance || !data.todo) {
+        if (!data.version || !data.finance) {
           reject(new Error('Invalid backup file format'));
           return;
         }
@@ -120,23 +117,4 @@ export const getFilterDateRange = (filter) => {
 
 export const getDynamicFilterOptions = () => {
   return ['This Month', 'This Week', 'Last Month', 'Overall'];
-};
-
-export const scheduleNotification = (taskId, title, body, date, recurring = false) => {
-  if (Notification.permission !== 'granted') return;
-
-  const now = new Date().getTime();
-  const target = new Date(date).getTime();
-  const delay = target - now;
-
-  if (delay > 0) {
-    setTimeout(() => {
-      new Notification(title, { body, icon: '/vite.svg' });
-      if (recurring) {
-        // Schedule next day
-        const nextDay = new Date(target + 24 * 60 * 60 * 1000);
-        scheduleNotification(taskId, title, body, nextDay, true);
-      }
-    }, delay);
-  }
 };

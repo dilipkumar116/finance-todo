@@ -98,12 +98,20 @@ const useFinanceStore = create(
     }),
     {
       name: 'finance-storage',
-      version: 2,
+      version: 3,
       partialize: (state) => ({ expenses: state.expenses, categories: state.categories }),
       migrate: (persistedState, version) => {
         if (version < 2) {
           // Force update to the new default categories with vibrant colors
           persistedState.categories = [...DEFAULT_CATEGORIES];
+        }
+        if (version < 3) {
+          if (persistedState.categories) {
+            const xCat = persistedState.categories.find(c => c.id === 'x' || c.name === 'X');
+            if (xCat) {
+              xCat.color = '#FF3366';
+            }
+          }
         }
         return persistedState;
       },

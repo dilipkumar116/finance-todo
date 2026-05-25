@@ -25,7 +25,7 @@ const icon = (path, opts = {}) => {
 
 // ── HI (Heroicons solid) ──────────────────────────────────────────────────────
 export const HiPlus = icon(<path fillRule="evenodd" d="M12 5a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H6a1 1 0 110-2h5V6a1 1 0 011-1z" clipRule="evenodd" />);
-export const HiX = icon(<path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L12 10.586l6.293-6.293a1 1 0 111.414 1.414L13.414 12l6.293 6.293a1 1 0 01-1.414 1.414L12 13.414l-6.293 6.293a1 1 0 01-1.414-1.414L10.586 12 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />);
+export const HiX = icon(<><rect x="3" y="3" width="18" height="18" rx="5" ry="5" /><path d="M8 8l8 8M16 8l-8 8" /></>, { stroke: true });
 export const HiCheck = icon(<path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />);
 export const HiTrash = icon(<path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />);
 export const HiArrowLeft = icon(<path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />);
@@ -84,3 +84,7 @@ export const IoGameController = icon(<path d="M7 12h2v-2h2v2h2v2h-2v2H9v-2H7v-2z
 
 export const HiRupee = icon(<path d="M19 4H5V6H19V4ZM17 8H5V10H17V8ZM11 11C14.3 11 17 13.7 17 17S14.3 23 11 23H8.5L15 30H12L5 23V21H11C13.2 21 15 19.2 15 17S13.2 13 11 13H5V11H11Z" />, { viewBox: "0 0 24 32" });
 export const HiNotebook = icon(<path d="M19 3h-9c-1.1 0-2 .9-2 2v1h-2v2h2v2h-2v2h2v2h-2v2h2v2h-2v2h2v1c0 1.1.9 2 2 2h9c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM10 5h8v14h-8V5zm2 4h4v1.5h-4V9zm0 4h4v1.5h-4V13zm0 4h2v1.5h-2V17z" />);
+export const HiVideoCamera = icon(<><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14v-4z" /><path d="M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" /></>);
+export const MdRestaurant = icon(<path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />);
+export const HiPopcorn = icon(<><path d="M4 6l2 14h12l2-14H4zm1 2h14l-1.5 10H6.5L5 8z" /><path d="M9 2a2 2 0 10-2 2h1a2 2 0 104 0h1a2 2 0 10-2-2H9z" /></>);
+export const HiUsers = icon(<path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />);
