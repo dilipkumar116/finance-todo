@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 
 const useProductivityStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       goals: [],
       habits: [],
 
@@ -60,10 +60,11 @@ const useProductivityStore = create(
       toggleHabitForDate: (id, dateStr) => set((state) => {
         const habits = state.habits.map((habit) => {
           if (habit.id === id) {
-            const hasCompleted = habit.completions.includes(dateStr);
+            const currentCompletions = habit.completions || [];
+            const hasCompleted = currentCompletions.includes(dateStr);
             const newCompletions = hasCompleted
-              ? habit.completions.filter(d => d !== dateStr)
-              : [...habit.completions, dateStr];
+              ? currentCompletions.filter(d => d !== dateStr)
+              : [...currentCompletions, dateStr];
             return { ...habit, completions: newCompletions };
           }
           return habit;
@@ -78,6 +79,22 @@ const useProductivityStore = create(
       deleteHabit: (id) => set((state) => ({
         habits: state.habits.filter(h => h.id !== id),
       })),
+
+      moveHabitUp: (id) => set((state) => {
+        const index = state.habits.findIndex(h => h.id === id);
+        if (index <= 0) return state; // Already at top
+        const newHabits = [...state.habits];
+        [newHabits[index - 1], newHabits[index]] = [newHabits[index], newHabits[index - 1]];
+        return { habits: newHabits };
+      }),
+
+      moveHabitDown: (id) => set((state) => {
+        const index = state.habits.findIndex(h => h.id === id);
+        if (index === -1 || index === state.habits.length - 1) return state; // Already at bottom
+        const newHabits = [...state.habits];
+        [newHabits[index], newHabits[index + 1]] = [newHabits[index + 1], newHabits[index]];
+        return { habits: newHabits };
+      }),
       
       // We can also import Productivity data if needed later
       importProductivityData: (data) => set(() => ({
@@ -104,24 +121,19 @@ export const getLocalDateString = (dateObj) => {
   return `${year}-${month}-${day}`;
 };
 
-export const getGoalsForDate = (goals, dateStr) => {
-  return goals.filter(g => g.date === dateStr).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+export const getHabitCompletionRateForDate = (habits, dateStr) => {
+  if (!habits || habits.length === 0) return 0;
+  const completed = habits.filter(h => h.completions && h.completions.includes(dateStr)).length;
+  return Math.round((completed / habits.length) * 100);
 };
 
-export const getCompletionRate = (goals, dateStr) => {
-  const dailyGoals = getGoalsForDate(goals, dateStr);
-  if (dailyGoals.length === 0) return 0;
-  const completed = dailyGoals.filter(g => g.completed).length;
-  return Math.round((completed / dailyGoals.length) * 100);
-};
-
-export const getMonthlyData = (goals, year, month) => {
+export const getMonthlyHabitData = (habits, year, month) => {
   // month is 0-indexed
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const data = [];
   for (let i = 1; i <= daysInMonth; i++) {
     const dStr = getLocalDateString(new Date(year, month, i));
-    const rate = getCompletionRate(goals, dStr);
+    const rate = getHabitCompletionRateForDate(habits, dStr);
     data.push({ day: i, dateStr: dStr, rate });
   }
   return data;
@@ -152,17 +164,66 @@ export const getCurrentStreak = (habit) => {
   return streak;
 };
 
-export const getWeeklyProductivity = (goals) => {
+export const getLongestStreak = (habit) => {
+  if (!habit || !habit.completions || habit.completions.length === 0) return 0;
+  
+  // Sort completions chronologically
+  const sorted = [...habit.completions].sort();
+  
+  let maxStreak = 0;
+  let currentStreak = 0;
+  let prevDate = null;
+
+  for (const dateStr of sorted) {
+    const currDate = new Date(dateStr);
+    currDate.setHours(0, 0, 0, 0); // normalize time
+
+    if (!prevDate) {
+      currentStreak = 1;
+    } else {
+      const diffTime = Math.abs(currDate - prevDate);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      
+      if (diffDays === 1) {
+        currentStreak++;
+      } else if (diffDays > 1) {
+        currentStreak = 1; // reset streak
+      }
+    }
+    maxStreak = Math.max(maxStreak, currentStreak);
+    prevDate = currDate;
+  }
+  
+  return maxStreak;
+};
+
+export const getWeeklyHabitProductivity = (habits) => {
   const data = [];
   const today = new Date();
   for (let i = 6; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const dStr = getLocalDateString(d);
-    const rate = getCompletionRate(goals, dStr);
+    const rate = getHabitCompletionRateForDate(habits, dStr);
     // e.g. "Mon"
     const dayName = d.toLocaleDateString(undefined, { weekday: 'short' }); 
     data.push({ dateStr: dStr, label: dayName, rate });
   }
   return data;
+};
+
+
+export const getHabitLeaderboard = (habits) => {
+  if (!habits) return [];
+  return [...habits]
+    .map(h => ({
+      ...h,
+      totalCompletions: h.completions ? h.completions.length : 0
+    }))
+    .sort((a, b) => b.totalCompletions - a.totalCompletions);
+};
+
+export const getTotalCompletions = (habits) => {
+  if (!habits) return 0;
+  return habits.reduce((acc, habit) => acc + (habit.completions ? habit.completions.length : 0), 0);
 };

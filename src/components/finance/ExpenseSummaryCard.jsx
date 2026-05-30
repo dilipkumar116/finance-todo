@@ -6,12 +6,12 @@ import Dropdown from '../shared/Dropdown';
 const DoughnutChart = lazy(() => import('./DoughnutChart'));
 
 export default function ExpenseSummaryCard() {
-  const expenses = useFinanceStore((s) => s.expenses);
-  const categories = useFinanceStore((s) => s.categories);
+  const expenses = useFinanceStore((s) => s.expenses) || [];
+  const categories = useFinanceStore((s) => s.categories) || [];
   const filter = useFinanceStore((s) => s.filter);
   const setFilter = useFinanceStore((s) => s.setFilter);
 
-  const filteredExpenses = getFilteredExpenses(expenses, filter);
+  const filteredExpenses = getFilteredExpenses(expenses, filter) || [];
   const categoryTotals = getCategoryTotals(categories, filteredExpenses)
     .sort((a, b) => b.total - a.total);
   const totalSpent = getTotalSpent(filteredExpenses);
@@ -54,7 +54,7 @@ export default function ExpenseSummaryCard() {
         </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[140px] overflow-y-auto no-scrollbar pr-1">
-          {categoryTotals.map((cat, idx) => (
+          {(categoryTotals || []).map((cat, idx) => (
             <motion.div 
               key={cat.id}
               initial={{ opacity: 0, scale: 0.95 }}

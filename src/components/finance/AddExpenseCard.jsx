@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HiPlus } from '../../utils/icons';
 import useFinanceStore from '../../stores/useFinanceStore';
-import { getCategoryById } from '../../utils/categories';
 
 export default function AddExpenseCard() {
   const categories = useFinanceStore((s) => s.categories);

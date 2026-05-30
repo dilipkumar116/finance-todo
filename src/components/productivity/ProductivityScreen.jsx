@@ -1,10 +1,11 @@
 import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiHome, HiChartBar, HiCalendar } from '../../utils/icons';
+import { HiHome, HiChartBar, HiCalendar, HiFire } from '../../utils/icons';
 
 const ProductivityHome = lazy(() => import('./ProductivityHome'));
 const ProductivityCalendar = lazy(() => import('./ProductivityCalendar'));
 const ProductivityInsights = lazy(() => import('./ProductivityInsights'));
+const ProductivityStreaks = lazy(() => import('./ProductivityStreaks'));
 
 export default function ProductivityScreen({ setActiveTab }) {
   const [activeTab, setLocalActiveTab] = useState('home');
@@ -13,6 +14,7 @@ export default function ProductivityScreen({ setActiveTab }) {
     { id: 'home', icon: HiHome, label: 'Home' },
     { id: 'calendar', icon: HiCalendar, label: 'Calendar' },
     { id: 'insights', icon: HiChartBar, label: 'Insights' },
+    { id: 'streaks', icon: HiFire, label: 'Streaks' },
   ];
 
   return (
@@ -98,6 +100,20 @@ export default function ProductivityScreen({ setActiveTab }) {
             >
               <Suspense fallback={<div className="p-8 text-center"><div className="w-6 h-6 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
                 <ProductivityInsights inline />
+              </Suspense>
+            </motion.div>
+          )}
+
+          {activeTab === 'streaks' && (
+            <motion.div
+              key="streaks"
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Suspense fallback={<div className="p-8 text-center"><div className="w-6 h-6 border-2 border-accent-green border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+                <ProductivityStreaks inline />
               </Suspense>
             </motion.div>
           )}

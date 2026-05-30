@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiHome, HiChartBar, HiListBullet, HiCalendar, HiPlus } from '../../utils/icons';
+import { HiHome, HiChartBar, HiListBullet, HiCalendar } from '../../utils/icons';
 import ExpenseSummaryCard from './ExpenseSummaryCard';
 import AddExpenseCard from './AddExpenseCard';
 import AddExpenseModal from './AddExpenseModal';
@@ -35,7 +35,7 @@ export default function FinanceScreen() {
           </h1>
           
           <div className="flex bg-surface p-1 rounded-xl border border-border shadow-inner">
-            {tabs.map((tab) => {
+            {(tabs || []).map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (

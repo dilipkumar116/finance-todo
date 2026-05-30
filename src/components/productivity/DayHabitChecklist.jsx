@@ -1,14 +1,13 @@
 import { motion } from 'framer-motion';
 import { HiArrowLeft } from '../../utils/icons';
-import useProductivityStore, { getGoalsForDate, getLocalDateString } from '../../stores/useProductivityStore';
-import TodayGoalItem from './TodayGoalItem';
-import AddGoalCard from './AddGoalCard';
+import useProductivityStore, { getLocalDateString } from '../../stores/useProductivityStore';
+import HabitCard from './HabitCard';
 
-export default function DayGoalEditor({ date, onClose }) {
-  const goals = useProductivityStore(s => s.goals);
+export default function DayHabitChecklist({ date, onClose }) {
+  const habits = useProductivityStore(s => s.habits) || [];
   const dateStr = getLocalDateString(date);
-  const dayGoals = getGoalsForDate(goals, dateStr);
-  const completedCount = dayGoals.filter(g => g.completed).length;
+  
+  const habitsCompleted = (habits || []).filter(h => h.completions && h.completions.includes(dateStr));
 
   return (
     <motion.div
@@ -28,7 +27,7 @@ export default function DayGoalEditor({ date, onClose }) {
               {date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}
             </h2>
             <p className="text-[10px] text-text-muted font-bold uppercase tracking-wider mt-0.5">
-              {completedCount} of {dayGoals.length} Goals Done
+              {habitsCompleted.length} of {habits.length} Habits Done
             </p>
           </div>
         </div>
@@ -36,19 +35,15 @@ export default function DayGoalEditor({ date, onClose }) {
 
       <div className="flex-1 overflow-y-auto no-scrollbar p-5 space-y-6">
         <div className="space-y-2">
-          {dayGoals.map((goal) => (
-            <TodayGoalItem key={goal.id} goal={goal} />
+          {habits.map((habit) => (
+            <HabitCard key={habit.id} habit={habit} dateStr={dateStr} />
           ))}
-          {dayGoals.length === 0 && (
+          {habits.length === 0 && (
             <div className="text-center py-12 bg-surface/30 rounded-card border border-dashed border-border">
-              <p className="text-sm text-text-muted italic">No goals set for this date.</p>
+              <p className="text-sm text-text-muted italic">No habits configured.</p>
+              <p className="text-xs text-text-muted mt-2">Head to Settings to add habits.</p>
             </div>
           )}
-        </div>
-        
-        <div>
-          <h3 className="text-xs font-bold text-text-muted uppercase tracking-widest mb-3">Add New Goal</h3>
-          <AddGoalCard defaultDate={date} />
         </div>
       </div>
     </motion.div>

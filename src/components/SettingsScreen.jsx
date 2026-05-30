@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiDownload, HiUpload, HiBell, HiPencil, HiTrash, HiCheck, HiShieldCheck } from '../utils/icons';
+import { HiDownload, HiUpload, HiPencil, HiTrash, HiCheck, HiShieldCheck, HiArrowUp, HiArrowDown } from '../utils/icons';
 import useFinanceStore from '../stores/useFinanceStore';
 import { exportData, importData } from '../utils/helpers';
-import { CATEGORY_ICONS, DEFAULT_CATEGORIES } from '../utils/categories';
+import { CATEGORY_ICONS } from '../utils/categories';
 import CategorySafetyModal from './finance/CategorySafetyModal';
 import EditCategorySafetyModal from './finance/EditCategorySafetyModal';
 import { getStoredDirectoryHandle, setStoredDirectoryHandle, removeStoredDirectoryHandle } from '../utils/db';
@@ -25,6 +25,8 @@ export default function SettingsScreen() {
   const [backupDirName, setBackupDirName] = useState('');
   const [backupDirHandle, setBackupDirHandle] = useState(null);
   const [dirPermission, setDirPermission] = useState('prompt');
+  const [showCategories, setShowCategories] = useState(false);
+  const [showHabits, setShowHabits] = useState(false);
 
   useEffect(() => {
     getStoredDirectoryHandle().then(async (handle) => {
@@ -163,15 +165,34 @@ export default function SettingsScreen() {
 
         {/* Categories */}
         <section>
-          <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Finance Categories</h3>
-          <div className="grid grid-cols-2 gap-2">
-            {financeStore.categories.map((cat) => (
-              <div key={cat.id} className="p-3 rounded-btn bg-card border border-border flex flex-col gap-2">
+          <button 
+            onClick={() => setShowCategories(!showCategories)}
+            className="w-full flex items-center justify-between text-left mb-3 bg-surface p-3 rounded-btn border border-border hover:bg-white/5 transition-colors"
+          >
+            <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
+              <span className="w-6 h-6 rounded-md bg-accent-blue/10 text-accent-blue flex items-center justify-center">💼</span>
+              Finance Categories
+            </h3>
+            <svg className={`w-5 h-5 text-text-muted transition-transform ${showCategories ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <AnimatePresence>
+            {showCategories && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-2 pb-4">
+            {(financeStore.categories || []).map((cat, index) => {
+              if (!cat) return null;
+              return (
+              <div key={cat.id || `fallback-cat-${index}`} className="p-3 rounded-btn bg-card border border-border flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: cat.color + '18' }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: (cat.color || '#666') + '18' }}>
                     {(() => {
-                      const Icon = CATEGORY_ICONS[cat.icon] || HiDownload;
-                      return <Icon className="w-4 h-4" style={{ color: cat.color }} />;
+                      const Icon = (cat.icon && CATEGORY_ICONS[cat.icon]) ? CATEGORY_ICONS[cat.icon] : HiDownload;
+                      return <Icon className="w-4 h-4" style={{ color: cat.color || '#666' }} />;
                     })()}
                   </div>
                   <div className="flex items-center gap-1">
@@ -186,27 +207,55 @@ export default function SettingsScreen() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs font-medium text-text-primary truncate">{cat.name}</p>
+                <p className="text-xs font-medium text-text-primary truncate">{cat.name || 'Unnamed'}</p>
               </div>
-            ))}
-          </div>
+            )})}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         {/* Productivity Habits */}
         <section>
-          <h3 className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-3">Productivity Habits</h3>
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {productivityStore.habits.map((habit) => (
-              <div key={habit.id} className="p-3 rounded-btn bg-card border border-border flex flex-col gap-2">
+          <button 
+            onClick={() => setShowHabits(!showHabits)}
+            className="w-full flex items-center justify-between text-left mb-3 bg-surface p-3 rounded-btn border border-border hover:bg-white/5 transition-colors"
+          >
+            <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
+              <span className="w-6 h-6 rounded-md bg-accent-green/10 text-accent-green flex items-center justify-center">🚀</span>
+              Productivity Habits
+            </h3>
+            <svg className={`w-5 h-5 text-text-muted transition-transform ${showHabits ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+          </button>
+          <AnimatePresence>
+            {showHabits && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="grid grid-cols-2 gap-2 mb-3">
+            {(productivityStore.habits || []).map((habit, index) => {
+              if (!habit) return null;
+              return (
+              <div key={habit.id || `fallback-habit-${index}`} className="p-3 rounded-btn bg-card border border-border flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: habit.color + '18' }}>
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: (habit.color || '#666') + '18' }}>
                     {(() => {
-                      const Icon = Icons[habit.icon] || HiDownload;
-                      return <Icon className="w-4 h-4" style={{ color: habit.color }} />;
+                      const Icon = (habit.icon && Icons[habit.icon]) ? Icons[habit.icon] : HiDownload;
+                      return <Icon className="w-4 h-4" style={{ color: habit.color || '#666' }} />;
                     })()}
                   </div>
                   <div className="flex items-center gap-1">
-                    <button onClick={() => setEditingHabit(habit)} className="p-1.5 rounded-md hover:bg-white/5 transition-colors">
+                    <button onClick={() => productivityStore.moveHabitUp(habit.id)} className="p-1 rounded-md hover:bg-white/5 transition-colors" title="Move Up">
+                      <HiArrowUp className="w-3 h-3 text-text-muted" />
+                    </button>
+                    <button onClick={() => productivityStore.moveHabitDown(habit.id)} className="p-1 rounded-md hover:bg-white/5 transition-colors" title="Move Down">
+                      <HiArrowDown className="w-3 h-3 text-text-muted" />
+                    </button>
+                    <button onClick={() => setEditingHabit(habit)} className="p-1.5 rounded-md hover:bg-white/5 transition-colors ml-1">
                       <HiPencil className="w-3.5 h-3.5 text-text-muted" />
                     </button>
                     <button 
@@ -217,16 +266,19 @@ export default function SettingsScreen() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs font-medium text-text-primary truncate">{habit.name}</p>
+                <p className="text-xs font-medium text-text-primary truncate">{habit.name || 'Unnamed'}</p>
               </div>
-            ))}
+            )})}
           </div>
           <button 
             onClick={() => setIsAddingHabit(true)}
             className="w-full py-3 rounded-btn border border-dashed border-border text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors text-xs font-bold"
           >
-            + Add Habit
-          </button>
+                  + Add Habit
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
       </div>
 

@@ -3,7 +3,7 @@ import useFinanceStore from '../../stores/useFinanceStore';
 import ExpenseItem from './ExpenseItem';
 
 export default function RecentExpenses() {
-  const expenses = useFinanceStore((s) => s.expenses);
+  const expenses = useFinanceStore((s) => s.expenses) || [];
   const recentExpenses = expenses.slice(0, 15);
 
   return (

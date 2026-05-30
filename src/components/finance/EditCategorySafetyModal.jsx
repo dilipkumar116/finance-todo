@@ -27,8 +27,8 @@ export default function EditCategorySafetyModal({ originalCategory, newCategoryD
 
   if (!originalCategory || !newCategoryData) return null;
 
-  const OldIcon = getCategoryIcon(originalCategory.icon);
-  const NewIcon = getCategoryIcon(newCategoryData.icon);
+  const oldIconComp = getCategoryIcon(originalCategory.icon);
+  const newIconComp = getCategoryIcon(newCategoryData.icon);
 
   return (
     <motion.div
@@ -75,7 +75,7 @@ export default function EditCategorySafetyModal({ originalCategory, newCategoryD
               <div className="flex flex-col items-center gap-2 w-1/3">
                 <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Original</span>
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center border border-white/10" style={{ backgroundColor: originalCategory.color + '20' }}>
-                  <OldIcon className="w-6 h-6" style={{ color: originalCategory.color }} />
+                  {oldIconComp({ className: "w-6 h-6", style: { color: originalCategory.color } })}
                 </div>
                 <span className="text-xs font-bold text-text-secondary truncate w-full text-center">{originalCategory.name}</span>
               </div>
@@ -91,7 +91,7 @@ export default function EditCategorySafetyModal({ originalCategory, newCategoryD
               <div className="flex flex-col items-center gap-2 w-1/3">
                 <span className="text-[10px] font-bold text-accent-blue uppercase tracking-widest">New</span>
                 <div className="w-12 h-12 rounded-xl flex items-center justify-center shadow-glow-blue border border-accent-blue/30" style={{ backgroundColor: newCategoryData.color + '20' }}>
-                  <NewIcon className="w-6 h-6" style={{ color: newCategoryData.color }} />
+                  {newIconComp({ className: "w-6 h-6", style: { color: newCategoryData.color } })}
                 </div>
                 <span className="text-xs font-bold text-text-primary truncate w-full text-center">{newCategoryData.name}</span>
               </div>

@@ -35,8 +35,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
 
   const monthData = useMemo(() => {
     const data = {};
-    expenses.forEach(exp => {
-      const d = new Date(exp.createdAt);
+    (expenses || []).forEach(exp => {
+      const d = new Date(exp?.createdAt || 0);
       if (d.getMonth() === daysInMonth.month && d.getFullYear() === daysInMonth.year) {
         const date = d.getDate();
         data[date] = (data[date] || 0) + exp.amount;
@@ -47,14 +47,14 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
 
   const monthCategoryTotals = useMemo(() => {
     const totals = {};
-    expenses.forEach(exp => {
-      const d = new Date(exp.createdAt);
+    (expenses || []).forEach(exp => {
+      const d = new Date(exp?.createdAt || 0);
       if (d.getMonth() === daysInMonth.month && d.getFullYear() === daysInMonth.year) {
         totals[exp.category] = (totals[exp.category] || 0) + exp.amount;
       }
     });
     return Object.entries(totals).map(([id, total]) => {
-      const cat = categories.find(c => c.id === id) || { color: '#666' };
+      const cat = (categories || []).find(c => c.id === id) || { color: '#666' };
       return { id, total, color: cat.color };
     }).sort((a, b) => b.total - a.total);
   }, [expenses, daysInMonth, categories]);
@@ -75,8 +75,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
   };
 
   const filteredBySelectedDate = useMemo(() => {
-    return expenses.filter(exp => {
-      const d = new Date(exp.createdAt);
+    return (expenses || []).filter(exp => {
+      const d = new Date(exp?.createdAt || 0);
       return d.getDate() === selectedDate.getDate() && 
              d.getMonth() === selectedDate.getMonth() && 
              d.getFullYear() === selectedDate.getFullYear();
@@ -90,8 +90,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
 
   // Category-filtered expenses (second filter, within timeline)
   const filteredExpenses = useMemo(() => {
-    if (selectedCategory === 'all') return timelineFiltered;
-    return timelineFiltered.filter(e => e.category === selectedCategory);
+    if (selectedCategory === 'all') return timelineFiltered || [];
+    return (timelineFiltered || []).filter(e => e.category === selectedCategory);
   }, [timelineFiltered, selectedCategory]);
 
   // Total spent for the filtered set
@@ -101,8 +101,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
 
   const dailyTotalsList = useMemo(() => {
     const totals = {};
-    filteredExpenses.forEach(exp => {
-      const dateKey = new Date(exp.createdAt).toDateString();
+    (filteredExpenses || []).forEach(exp => {
+      const dateKey = new Date(exp?.createdAt || 0).toDateString();
       totals[dateKey] = (totals[dateKey] || 0) + exp.amount;
     });
     return Object.entries(totals)
@@ -165,7 +165,7 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
                   </motion.p>
                   <p className="text-[10px] text-text-muted mt-1 font-medium">
                     {filteredExpenses.length} transaction{filteredExpenses.length !== 1 ? 's' : ''}
-                    {selectedCategory !== 'all' && ` in ${categories.find(c => c.id === selectedCategory)?.name || 'category'}`}
+                    {selectedCategory !== 'all' && ` in ${(categories || []).find(c => c.id === selectedCategory)?.name || 'category'}`}
                   </p>
                 </div>
 
@@ -227,7 +227,7 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
               >
                 All
               </button>
-              {categories.map(cat => (
+              {(categories || []).map(cat => (
                 <button
                   key={cat.id}
                   onClick={() => setSelectedCategory(cat.id)}
@@ -245,7 +245,7 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
 
             {/* List */}
             <div className="px-5 pb-4 space-y-4">
-              {dailyTotalsList.map(({ date, amount }) => (
+              {(dailyTotalsList || []).map(({ date, amount }) => (
                 <div key={date.toDateString()} className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">
@@ -254,7 +254,7 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
                     <span className="text-sm font-bold text-text-primary">{formatCurrency(amount)}</span>
                   </div>
                   <div className="glass rounded-card p-3 space-y-1">
-                    {filteredExpenses.filter(e => new Date(e.createdAt).toDateString() === date.toDateString()).map(exp => (
+                    {(filteredExpenses || []).filter(e => new Date(e?.createdAt || 0).toDateString() === date.toDateString()).map(exp => (
                       <ExpenseItem key={exp.id} expense={exp} />
                     ))}
                   </div>
@@ -308,8 +308,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
               {/* Monthly Categories Slider */}
               {monthCategoryTotals.length > 0 && (
                 <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                  {monthCategoryTotals.map(cat => {
-                    const category = categories.find(c => c.id === cat.id);
+                  {(monthCategoryTotals || []).map(cat => {
+                    const category = (categories || []).find(c => c.id === cat.id);
                     const CatIcon = getCategoryIcon(category?.icon);
                     return (
                       <div key={cat.id} className="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border">
@@ -390,7 +390,7 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
                 </span>
               </div>
               <div className="space-y-2">
-                {filteredBySelectedDate.map(exp => (
+                {(filteredBySelectedDate || []).map(exp => (
                   <ExpenseItem key={exp.id} expense={exp} />
                 ))}
                 {filteredBySelectedDate.length === 0 && (
@@ -457,8 +457,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
                 <div className="relative mb-4 mt-2">
                   <Suspense fallback={<div className="w-[240px] h-[240px] mx-auto rounded-full bg-surface/30 animate-pulse" />}>
                     <DoughnutChart 
-                      customCategoryTotals={monthCategoryTotals.map(c => {
-                        const cat = categories.find(catObj => catObj.id === c.id);
+                      customCategoryTotals={(monthCategoryTotals || []).map(c => {
+                        const cat = (categories || []).find(catObj => catObj.id === c.id);
                         return { name: cat?.name, total: c.total, color: cat?.color || '#666' };
                       })}
                       customTotalSpent={monthTotal}
@@ -471,8 +471,8 @@ export default function HistoryScreen({ onClose, inline = false, initialView = '
                     <h4 className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Categories Split</h4>
                     <span className="text-[10px] font-bold text-accent-green uppercase">{monthCategoryTotals.length} Groups</span>
                   </div>
-                  {monthCategoryTotals.map((cat, idx) => {
-                    const category = categories.find(c => c.id === cat.id);
+                  {(monthCategoryTotals || []).map((cat, idx) => {
+                    const category = (categories || []).find(c => c.id === cat.id);
                     const CatIcon = getCategoryIcon(category?.icon);
                     const percent = Math.round((cat.total / monthTotal) * 100) || 0;
                     

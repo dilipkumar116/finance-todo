@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryIcon, getCategoryById } from '../../utils/categories';
 import { formatCurrency, formatTimeAgo } from '../../utils/helpers';
@@ -38,7 +38,7 @@ export default function ExpenseItem({ expense }) {
   if (!expense || !categories) return null;
 
   const cat = getCategoryById(categories, expense.category) || categories[0] || { name: 'Other', color: '#666', icon: 'food' };
-  const Icon = getCategoryIcon(cat.icon);
+  const iconComp = getCategoryIcon(cat.icon);
 
   const handleCategorySelect = (catId) => {
     if (catId === expense.category) return;
@@ -73,7 +73,7 @@ export default function ExpenseItem({ expense }) {
         className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
         style={{ backgroundColor: (cat.color || '#666') + '18' }}
       >
-        <Icon className="w-5 h-5" style={{ color: cat.color }} />
+        {iconComp({ className: "w-5 h-5", style: { color: cat.color } })}
       </div>
 
       {/* Text */}
@@ -204,7 +204,7 @@ export default function ExpenseItem({ expense }) {
                         {/* Old Category */}
                         <div className="flex flex-col items-center gap-2 flex-1">
                           <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ backgroundColor: (cat.color || '#666') + '18' }}>
-                            <Icon className="w-6 h-6" style={{ color: cat.color }} />
+                            {iconComp({ className: "w-6 h-6", style: { color: cat.color } })}
                           </div>
                           <span className="text-xs font-bold text-text-muted truncate w-full text-center">{cat.name}</span>
                         </div>

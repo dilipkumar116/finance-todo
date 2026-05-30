@@ -28,8 +28,8 @@ export const exportData = async (financeState) => {
         return;
       }
     }
-  } catch (err) {
-    console.error('Failed to save to custom directory, falling back to download:', err);
+  } catch {
+    // Failed to save to custom directory, falling back to download
   }
 
   const blob = new Blob([jsonStr], { type: 'application/json' });
@@ -54,7 +54,7 @@ export const importData = (file) => {
           return;
         }
         resolve(data);
-      } catch (err) {
+      } catch {
         reject(new Error('Failed to parse backup file'));
       }
     };

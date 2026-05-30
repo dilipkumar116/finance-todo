@@ -1,16 +1,16 @@
 import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { HiTrash, HiArrowRight, HiDownload, HiShieldCheck, HiExclamationTriangle, HiX, HiPencil } from '../../utils/icons';
 import useFinanceStore from '../../stores/useFinanceStore';
 import { exportData } from '../../utils/helpers';
 
-export default function CategorySafetyModal({ mode = 'delete', category, newData = null, onClose, onConfirm }) {
+export default function CategorySafetyModal({ mode = 'delete', category, newData = null, onClose }) {
   const financeStore = useFinanceStore();
   const [step, setStep] = useState(1); 
   const [action, setAction] = useState('move_to_existing');
   const [targetId, setTargetId] = useState('');
   const [newName, setNewName] = useState('');
-  const [hasBackup, setHasBackup] = useState(false);
+
 
   const affectedCount = useMemo(() => {
     return financeStore.expenses.filter(e => e.category === category.id).length;
@@ -22,7 +22,6 @@ export default function CategorySafetyModal({ mode = 'delete', category, newData
 
   const handleBackup = () => {
     exportData(financeStore);
-    setHasBackup(true);
     setStep(2);
   };
 

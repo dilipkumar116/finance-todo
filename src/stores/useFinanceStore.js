@@ -5,7 +5,7 @@ import { generateId, getFilterDateRange } from '../utils/helpers';
 
 const useFinanceStore = create(
   persist(
-    (set, get) => ({
+    (set) => ({
       expenses: [],
       categories: [...DEFAULT_CATEGORIES],
       filter: 'This Month',

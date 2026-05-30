@@ -2,7 +2,6 @@ import { useState, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNav from './components/BottomNav';
 import ErrorBoundary from './components/shared/ErrorBoundary';
-import { HiChartBar } from './utils/icons';
 
 const FinanceScreen = lazy(() => import('./components/finance/FinanceScreen'));
 const SettingsScreen = lazy(() => import('./components/SettingsScreen'));
@@ -24,21 +23,33 @@ export default function App() {
       <div className="w-full max-w-lg h-full flex flex-col relative">
         
         {/* Main Content */}
-        <ErrorBoundary>
-          <Suspense fallback={<div className="flex-1 flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin" /></div>}>
+        <div className="flex-1 h-full overflow-hidden">
+          <Suspense fallback={<div className="flex-1 h-full flex items-center justify-center"><div className="w-8 h-8 border-2 border-accent-green border-t-transparent rounded-full animate-spin" /></div>}>
             <AnimatePresence mode="wait">
               {activeTab === 'finance' && (
-                <FinanceScreen key={`finance-${financeResetKey}`} />
+                <motion.div key={`finance-${financeResetKey}`} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="h-full">
+                  <ErrorBoundary>
+                    <FinanceScreen />
+                  </ErrorBoundary>
+                </motion.div>
               )}
               {activeTab === 'productivity' && (
-                <ProductivityScreen key="productivity" setActiveTab={setActiveTab} />
+                <motion.div key="productivity" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="h-full">
+                  <ErrorBoundary>
+                    <ProductivityScreen setActiveTab={setActiveTab} />
+                  </ErrorBoundary>
+                </motion.div>
               )}
               {activeTab === 'settings' && (
-                <SettingsScreen key="settings" />
+                <motion.div key="settings" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="h-full">
+                  <ErrorBoundary>
+                    <SettingsScreen />
+                  </ErrorBoundary>
+                </motion.div>
               )}
             </AnimatePresence>
           </Suspense>
-        </ErrorBoundary>
+        </div>
 
         {/* Bottom Navigation */}
         <BottomNav activeTab={activeTab} setActiveTab={handleTabChange} />
