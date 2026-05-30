@@ -1,4 +1,6 @@
-export const exportData = (financeState) => {
+import { getStoredDirectoryHandle } from './db';
+
+export const exportData = async (financeState) => {
   const data = {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -8,11 +10,33 @@ export const exportData = (financeState) => {
     },
   };
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const jsonStr = JSON.stringify(data, null, 2);
+  const now = new Date();
+  
+  const datePart = now.toISOString().slice(0, 10);
+  const timePart = now.toTimeString().slice(0, 8).replace(/:/g, '-');
+  const filename = `prodance-${datePart}_${timePart}.json`;
+
+  try {
+    const dirHandle = await getStoredDirectoryHandle();
+    if (dirHandle) {
+      if ((await dirHandle.queryPermission({ mode: 'readwrite' })) === 'granted') {
+        const fileHandle = await dirHandle.getFileHandle(filename, { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(jsonStr);
+        await writable.close();
+        return;
+      }
+    }
+  } catch (err) {
+    console.error('Failed to save to custom directory, falling back to download:', err);
+  }
+
+  const blob = new Blob([jsonStr], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `productivity-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
