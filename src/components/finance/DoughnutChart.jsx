@@ -66,7 +66,7 @@ export default function DoughnutChart({ customCategoryTotals, customTotalSpent }
               fill="transparent"
               stroke={s.color}
               strokeWidth="20"
-              strokeLinecap={s.percentage === 1 ? "butt" : "round"}
+              strokeLinecap="butt"
               strokeDasharray={s.strokeDasharray}
               initial={{ strokeDashoffset: circumference }}
               animate={{ strokeDashoffset: s.strokeDashoffset }}

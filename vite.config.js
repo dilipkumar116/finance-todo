@@ -9,9 +9,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Finance & Productivity',
-        short_name: 'Tracker',
-        description: 'Track your expenses and daily habits.',
+        name: 'Prodance',
+        short_name: 'Prodance',
+        description: 'Track your finances and manage tasks with style.',
         theme_color: '#0B0B0B',
         background_color: '#000000',
         display: 'standalone',

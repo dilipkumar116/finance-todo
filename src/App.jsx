@@ -10,10 +10,12 @@ const ProductivityScreen = lazy(() => import('./components/productivity/Producti
 export default function App() {
   const [activeTab, setActiveTab] = useState('finance');
   const [financeResetKey, setFinanceResetKey] = useState(0);
+  const [productivityResetKey, setProductivityResetKey] = useState(0);
 
   const handleTabChange = (tabId) => {
-    if (activeTab === tabId && tabId === 'finance') {
-      setFinanceResetKey((k) => k + 1);
+    if (activeTab === tabId) {
+      if (tabId === 'finance') setFinanceResetKey((k) => k + 1);
+      if (tabId === 'productivity') setProductivityResetKey((k) => k + 1);
     }
     setActiveTab(tabId);
   };
@@ -34,7 +36,7 @@ export default function App() {
                 </motion.div>
               )}
               {activeTab === 'productivity' && (
-                <motion.div key="productivity" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="h-full">
+                <motion.div key={`productivity-${productivityResetKey}`} initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="h-full">
                   <ErrorBoundary>
                     <ProductivityScreen setActiveTab={setActiveTab} />
                   </ErrorBoundary>

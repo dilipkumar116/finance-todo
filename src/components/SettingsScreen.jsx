@@ -27,6 +27,7 @@ export default function SettingsScreen() {
   const [dirPermission, setDirPermission] = useState('prompt');
   const [showCategories, setShowCategories] = useState(false);
   const [showHabits, setShowHabits] = useState(false);
+  const [showBackupSettings, setShowBackupSettings] = useState(false);
 
   useEffect(() => {
     getStoredDirectoryHandle().then(async (handle) => {
@@ -127,38 +128,62 @@ export default function SettingsScreen() {
             {importStatus && <p className={`text-[10px] text-center mt-1 ${importStatus.startsWith('Error') ? 'text-accent-red' : 'text-accent-green'}`}>{importStatus}</p>}
           </div>
 
-          <div className="mt-4 p-4 rounded-card bg-surface border border-border">
-            <h4 className="text-sm font-bold text-text-primary mb-1">Backup Destination</h4>
-            {backupDirHandle ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-text-secondary">Selected Folder:</p>
-                    <p className="text-sm font-bold text-accent-blue">{backupDirName}</p>
+          <div className="mt-4">
+            <button 
+              onClick={() => setShowBackupSettings(!showBackupSettings)}
+              className="w-full flex items-center justify-between text-left bg-surface p-3 rounded-btn border border-border hover:bg-white/5 transition-colors"
+            >
+              <h3 className="text-xs font-semibold text-text-primary uppercase tracking-wider flex items-center gap-2">
+                <span className="w-6 h-6 rounded-md bg-accent-blue/10 text-accent-blue flex items-center justify-center">
+                  <HiShieldCheck className="w-4 h-4" />
+                </span>
+                Backup Destination
+              </h3>
+              <svg className={`w-5 h-5 text-text-muted transition-transform ${showBackupSettings ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <AnimatePresence>
+              {showBackupSettings && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="p-4 rounded-b-card bg-surface/50 border-x border-b border-border mt-[-4px] pt-5">
+                    {backupDirHandle ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-xs text-text-secondary">Selected Folder:</p>
+                            <p className="text-sm font-bold text-accent-blue">{backupDirName}</p>
+                          </div>
+                          {dirPermission !== 'granted' ? (
+                            <button onClick={handleRequestPermission} className="px-3 py-1.5 rounded-full bg-accent-red/10 border border-accent-red/20 text-[10px] text-accent-red font-bold flex items-center gap-1">
+                              <HiShieldCheck className="w-3.5 h-3.5" /> Authorize
+                            </button>
+                          ) : (
+                            <span className="px-3 py-1.5 rounded-full bg-accent-green/10 border border-accent-green/20 text-[10px] text-accent-green font-bold flex items-center gap-1">
+                              <HiCheck className="w-3.5 h-3.5" /> Authorized
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={handleConfigureFolder} className="flex-1 py-2 rounded-btn bg-card border border-border text-xs font-bold text-text-primary hover:bg-white/5 transition-colors">Change</button>
+                          <button onClick={handleClearFolder} className="flex-1 py-2 rounded-btn bg-accent-red/10 border border-accent-red/20 text-xs font-bold text-accent-red hover:bg-accent-red/20 transition-colors">Clear</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <p className="text-xs text-text-muted leading-relaxed">Not configured. Backups will download to your default downloads folder.</p>
+                        <button onClick={handleConfigureFolder} className="w-full py-2.5 rounded-btn bg-accent-blue/10 border border-accent-blue/20 text-accent-blue font-bold text-sm hover:bg-accent-blue/20 transition-colors">
+                          Configure Folder
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  {dirPermission !== 'granted' ? (
-                    <button onClick={handleRequestPermission} className="px-3 py-1.5 rounded-full bg-accent-red/10 border border-accent-red/20 text-[10px] text-accent-red font-bold flex items-center gap-1">
-                      <HiShieldCheck className="w-3.5 h-3.5" /> Authorize
-                    </button>
-                  ) : (
-                    <span className="px-3 py-1.5 rounded-full bg-accent-green/10 border border-accent-green/20 text-[10px] text-accent-green font-bold flex items-center gap-1">
-                      <HiCheck className="w-3.5 h-3.5" /> Authorized
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={handleConfigureFolder} className="flex-1 py-2 rounded-btn bg-card border border-border text-xs font-bold text-text-primary hover:bg-white/5 transition-colors">Change</button>
-                  <button onClick={handleClearFolder} className="flex-1 py-2 rounded-btn bg-accent-red/10 border border-accent-red/20 text-xs font-bold text-accent-red hover:bg-accent-red/20 transition-colors">Clear</button>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <p className="text-xs text-text-muted leading-relaxed">Not configured. Backups will download to your default downloads folder.</p>
-                <button onClick={handleConfigureFolder} className="w-full py-2.5 rounded-btn bg-accent-blue/10 border border-accent-blue/20 text-accent-blue font-bold text-sm hover:bg-accent-blue/20 transition-colors">
-                  Configure Folder
-                </button>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </section>
 
