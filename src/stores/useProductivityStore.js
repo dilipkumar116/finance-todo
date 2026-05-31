@@ -127,17 +127,6 @@ export const getHabitCompletionRateForDate = (habits, dateStr) => {
   return Math.round((completed / habits.length) * 100);
 };
 
-export const getMonthlyHabitData = (habits, year, month) => {
-  // month is 0-indexed
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const data = [];
-  for (let i = 1; i <= daysInMonth; i++) {
-    const dStr = getLocalDateString(new Date(year, month, i));
-    const rate = getHabitCompletionRateForDate(habits, dStr);
-    data.push({ day: i, dateStr: dStr, rate });
-  }
-  return data;
-};
 
 export const getCurrentStreak = (habit) => {
   if (!habit || !habit.completions || habit.completions.length === 0) return 0;
@@ -226,4 +215,87 @@ export const getHabitLeaderboard = (habits) => {
 export const getTotalCompletions = (habits) => {
   if (!habits) return 0;
   return habits.reduce((acc, habit) => acc + (habit.completions ? habit.completions.length : 0), 0);
+};
+
+export const getYearlyHeatmapData = (habits) => {
+  const today = new Date();
+  const data = [];
+  
+  // 364 days ago is the start (365 days total)
+  for (let i = 364; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const dStr = getLocalDateString(d);
+    
+    let count = 0;
+    if (habits && habits.length > 0) {
+      count = habits.filter(h => h.completions && h.completions.includes(dStr)).length;
+    }
+    
+    let intensity = 0;
+    if (count > 0 && habits.length > 0) {
+      const rate = count / habits.length;
+      if (rate > 0.75) intensity = 3;
+      else if (rate > 0.4) intensity = 2;
+      else intensity = 1;
+    }
+    
+    data.push({
+      dateStr: dStr,
+      dayNum: d.getDate(),
+      month: d.getMonth(),
+      dayOfWeek: d.getDay(), // 0 = Sunday
+      count,
+      intensity,
+      monthLabel: d.getDate() === 1 ? d.toLocaleDateString(undefined, { month: 'short' }) : null
+    });
+  }
+  return data;
+};
+
+export const getMonthlyHeatmapData = (habits) => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfWeek = new Date(year, month, 1).getDay(); // 0 = Sunday
+  
+  const data = [];
+  
+  // Pad the beginning of the month with empty cells
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    data.push({ isEmpty: true, id: `empty-${i}` });
+  }
+  
+  for (let i = 1; i <= daysInMonth; i++) {
+    const d = new Date(year, month, i);
+    const dStr = getLocalDateString(d);
+    
+    let count = 0;
+    if (habits && habits.length > 0) {
+      count = habits.filter(h => h.completions && h.completions.includes(dStr)).length;
+    }
+    
+    let intensity = 0;
+    if (count > 0 && habits.length > 0) {
+      const rate = count / habits.length;
+      if (rate > 0.75) intensity = 3;
+      else if (rate > 0.4) intensity = 2;
+      else intensity = 1;
+    }
+    
+    data.push({
+      isEmpty: false,
+      id: dStr,
+      dateStr: dStr,
+      dayNum: i,
+      dayOfWeek: d.getDay(),
+      count,
+      intensity,
+      isToday: d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()
+    });
+  }
+  
+  return data;
 };

@@ -1,16 +1,54 @@
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import BottomNav from './components/BottomNav';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
-const FinanceScreen = lazy(() => import('./components/finance/FinanceScreen'));
-const SettingsScreen = lazy(() => import('./components/SettingsScreen'));
-const ProductivityScreen = lazy(() => import('./components/productivity/ProductivityScreen'));
+// Wrapper for lazy loading that retries fetching chunks if they fail (e.g. after a new deployment)
+const lazyWithRetry = (componentImport) =>
+  lazy(async () => {
+    const pageHasAlreadyBeenForceRefreshed = JSON.parse(
+      window.sessionStorage.getItem('page-has-been-force-refreshed') || 'false'
+    );
+
+    try {
+      const component = await componentImport();
+      window.sessionStorage.setItem('page-has-been-force-refreshed', 'false');
+      return component;
+    } catch (error) {
+      if (!pageHasAlreadyBeenForceRefreshed) {
+        window.sessionStorage.setItem('page-has-been-force-refreshed', 'true');
+        window.location.reload();
+        return new Promise(() => {}); // Wait indefinitely while reloading
+      }
+      throw error;
+    }
+  });
+
+const FinanceScreen = lazyWithRetry(() => import('./components/finance/FinanceScreen'));
+const SettingsScreen = lazyWithRetry(() => import('./components/SettingsScreen'));
+const ProductivityScreen = lazyWithRetry(() => import('./components/productivity/ProductivityScreen'));
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('finance');
   const [financeResetKey, setFinanceResetKey] = useState(0);
   const [productivityResetKey, setProductivityResetKey] = useState(0);
+
+  useEffect(() => {
+    const preloadOtherScreens = () => {
+      import('./components/productivity/ProductivityScreen').catch(() => {});
+      import('./components/SettingsScreen').catch(() => {});
+    };
+
+    const id = typeof requestIdleCallback !== 'undefined'
+      ? requestIdleCallback(preloadOtherScreens)
+      : setTimeout(preloadOtherScreens, 100);
+
+    return () => {
+      typeof cancelIdleCallback !== 'undefined'
+        ? cancelIdleCallback(id)
+        : clearTimeout(id);
+    };
+  }, []);
 
   const handleTabChange = (tabId) => {
     if (activeTab === tabId) {

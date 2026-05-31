@@ -1,6 +1,6 @@
 import { getStoredDirectoryHandle } from './db';
 
-export const exportData = async (financeState) => {
+export const exportData = async (financeState, productivityState) => {
   const data = {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -8,6 +8,10 @@ export const exportData = async (financeState) => {
       expenses: financeState.expenses,
       categories: financeState.categories,
     },
+    productivity: productivityState ? {
+      goals: productivityState.goals,
+      habits: productivityState.habits,
+    } : undefined,
   };
 
   const jsonStr = JSON.stringify(data, null, 2);
@@ -49,7 +53,7 @@ export const importData = (file) => {
     reader.onload = (e) => {
       try {
         const data = JSON.parse(e.target.result);
-        if (!data.version || !data.finance) {
+        if (!data.version) {
           reject(new Error('Invalid backup file format'));
           return;
         }

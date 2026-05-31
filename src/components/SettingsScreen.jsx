@@ -74,7 +74,7 @@ export default function SettingsScreen() {
   };
 
   const handleExport = async () => {
-    await exportData(financeStore);
+    await exportData(financeStore, productivityStore);
     setImportStatus('Data exported!');
     setTimeout(() => setImportStatus(''), 2000);
   };
@@ -84,7 +84,12 @@ export default function SettingsScreen() {
     if (!file) return;
     try {
       const data = await importData(file);
-      financeStore.importFinanceData(data.finance);
+      if (data.finance) {
+        financeStore.importFinanceData(data.finance);
+      }
+      if (data.productivity) {
+        productivityStore.importProductivityData(data.productivity);
+      }
       setImportStatus('Data imported successfully!');
       setTimeout(() => setImportStatus(''), 2000);
     } catch (err) {

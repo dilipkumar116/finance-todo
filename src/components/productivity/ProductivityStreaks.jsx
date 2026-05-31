@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import useProductivityStore, { getCurrentStreak, getLongestStreak, getLocalDateString, getTotalCompletions } from '../../stores/useProductivityStore';
+import useProductivityStore, { getCurrentStreak, getLongestStreak, getLocalDateString, getTotalCompletions, getYearlyHeatmapData, getMonthlyHeatmapData } from '../../stores/useProductivityStore';
 import * as Icons from '../../utils/icons';
 
 // Simple shimmer effect
@@ -26,31 +26,44 @@ export default function ProductivityStreaks({ inline = false }) {
 
   const totalCompletions = useMemo(() => getTotalCompletions(habits), [habits]);
 
-  const heatmapData = useMemo(() => {
-    const today = new Date();
-    const data = [];
-    for (let i = 27; i >= 0; i--) { // last 4 weeks (28 days)
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dStr = getLocalDateString(d);
-      
-      let count = 0;
-      if (habits && habits.length > 0) {
-        count = habits.filter(h => h.completions && h.completions.includes(dStr)).length;
-      }
-      
-      let intensity = 0;
-      if (count > 0 && habits.length > 0) {
-        const rate = count / habits.length;
-        if (rate > 0.75) intensity = 3;
-        else if (rate > 0.4) intensity = 2;
-        else intensity = 1;
-      }
-      
-      data.push({ dateStr: dStr, dayNum: d.getDate(), count, intensity });
+  const [heatmapView, setHeatmapView] = useState('yearly');
+  const yearlyScrollRef = useRef(null);
+
+  const yearlyData = useMemo(() => getYearlyHeatmapData(habits), [habits]);
+  const monthlyData = useMemo(() => getMonthlyHeatmapData(habits), [habits]);
+
+  const yearlyWeeks = useMemo(() => {
+    if (!yearlyData || yearlyData.length === 0) return [];
+    const weeks = [];
+    let currentWeek = [];
+    const firstDay = yearlyData[0].dayOfWeek;
+    for (let i = 0; i < firstDay; i++) {
+      currentWeek.push(null);
     }
-    return data;
-  }, [habits]);
+    yearlyData.forEach(d => {
+      currentWeek.push(d);
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    });
+    if (currentWeek.length > 0) {
+      while (currentWeek.length < 7) currentWeek.push(null);
+      weeks.push(currentWeek);
+    }
+    return weeks;
+  }, [yearlyData]);
+
+  useEffect(() => {
+    if (heatmapView === 'yearly' && yearlyScrollRef.current) {
+      // Small timeout to ensure rendering is complete
+      setTimeout(() => {
+        if (yearlyScrollRef.current) {
+          yearlyScrollRef.current.scrollLeft = yearlyScrollRef.current.scrollWidth;
+        }
+      }, 50);
+    }
+  }, [heatmapView, yearlyWeeks]);
 
   const badges = [
     { id: 'first', title: 'First Step', desc: 'Complete 1 habit', icon: 'HiLightningBolt', unlocked: totalCompletions >= 1, color: '#00C2FF' },
@@ -109,31 +122,87 @@ export default function ProductivityStreaks({ inline = false }) {
         <div className="bg-card border border-border p-5 rounded-[24px] shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-[10px] font-bold text-text-muted uppercase tracking-widest">Activity Heatmap</h3>
-            <span className="text-xs text-text-secondary font-medium">Last 28 Days</span>
+            <div className="flex bg-surface rounded-full p-1 border border-border">
+              <button 
+                onClick={() => setHeatmapView('yearly')}
+                className={`text-[9px] font-bold px-3 py-1 rounded-full transition-colors ${heatmapView === 'yearly' ? 'bg-accent-green text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              >
+                Yearly
+              </button>
+              <button 
+                onClick={() => setHeatmapView('monthly')}
+                className={`text-[9px] font-bold px-3 py-1 rounded-full transition-colors ${heatmapView === 'monthly' ? 'bg-accent-green text-primary' : 'text-text-muted hover:text-text-primary'}`}
+              >
+                Monthly
+              </button>
+            </div>
           </div>
           
           <div className="flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2 mb-1">
-              {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(d => (
-                <div key={d} className="text-center text-[10px] font-bold text-text-muted">{d}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-2">
-              {heatmapData.map((d, i) => (
-                <div 
-                  key={i} 
-                  className={`aspect-square rounded-[8px] flex items-center justify-center transition-colors relative overflow-hidden group ${
-                    d.intensity === 3 ? 'bg-accent-green text-primary shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)]' :
-                    d.intensity === 2 ? 'bg-[#3CB371] text-primary/80 shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)]' :
-                    d.intensity === 1 ? 'bg-[#2E8B57] text-white/60' :
-                    'bg-surface border border-white/5 text-text-muted'
-                  }`}
-                  title={`${d.count} habits on ${d.dateStr}`}
-                >
-                  <span className={`text-[9px] font-bold ${d.intensity > 0 ? 'opacity-100' : 'opacity-30'}`}>{d.dayNum}</span>
+            {heatmapView === 'yearly' ? (
+              <div 
+                ref={yearlyScrollRef}
+                className="overflow-x-auto no-scrollbar pb-2"
+                style={{ scrollBehavior: 'smooth' }}
+              >
+                <div className="flex gap-1 pt-4" style={{ width: 'max-content' }}>
+                  {yearlyWeeks.map((week, wIdx) => {
+                    const firstOfMonth = week.find(d => d && d.monthLabel);
+                    return (
+                      <div key={wIdx} className="flex flex-col gap-1 relative">
+                        {firstOfMonth && (
+                          <span className="absolute -top-4 left-0 text-[8px] font-bold text-text-muted">
+                            {firstOfMonth.monthLabel}
+                          </span>
+                        )}
+                        <div className="flex flex-col gap-1">
+                          {week.map((d, dIdx) => {
+                            if (!d) return <div key={dIdx} className="w-2.5 h-2.5 rounded-[2px]" />;
+                            return (
+                              <div 
+                                key={dIdx} 
+                                className={`w-2.5 h-2.5 rounded-[2px] transition-colors ${
+                                  d.intensity === 3 ? 'bg-accent-green' :
+                                  d.intensity === 2 ? 'bg-[#3CB371]' :
+                                  d.intensity === 1 ? 'bg-[#2E8B57]' :
+                                  'bg-surface border border-white/5'
+                                }`}
+                                title={`${d.count} habits on ${d.dateStr}`}
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-7 gap-2">
+                {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => (
+                  <div key={`header-${i}`} className="text-center text-[10px] font-bold text-text-muted mb-1">{d}</div>
+                ))}
+                {monthlyData.map((d, i) => {
+                  if (d.isEmpty) {
+                    return <div key={`empty-${i}`} className="aspect-square" />;
+                  }
+                  return (
+                    <div 
+                      key={d.id} 
+                      className={`aspect-square rounded-[8px] flex items-center justify-center transition-colors relative overflow-hidden group ${
+                        d.intensity === 3 ? 'bg-accent-green text-primary shadow-[inset_0_2px_4px_rgba(255,255,255,0.4)]' :
+                        d.intensity === 2 ? 'bg-[#3CB371] text-primary/80 shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)]' :
+                        d.intensity === 1 ? 'bg-[#2E8B57] text-white/60' :
+                        'bg-surface border border-white/5 text-text-muted'
+                      } ${d.isToday ? 'ring-2 ring-accent-blue ring-offset-2 ring-offset-card' : ''}`}
+                      title={`${d.count} habits on ${d.dateStr}`}
+                    >
+                      <span className={`text-[9px] font-bold ${d.intensity > 0 ? 'opacity-100' : 'opacity-30'}`}>{d.dayNum}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             
             {/* Legend */}
             <div className="flex justify-end items-center gap-1.5 mt-2">

@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { HiTrash, HiArrowRight, HiDownload, HiShieldCheck, HiExclamationTriangle, HiX, HiPencil } from '../../utils/icons';
 import useFinanceStore from '../../stores/useFinanceStore';
+import useProductivityStore from '../../stores/useProductivityStore';
 import { exportData } from '../../utils/helpers';
 
 export default function CategorySafetyModal({ mode = 'delete', category, newData = null, onClose }) {
   const financeStore = useFinanceStore();
+  const productivityStore = useProductivityStore();
   const [step, setStep] = useState(1); 
   const [action, setAction] = useState('move_to_existing');
   const [targetId, setTargetId] = useState('');
@@ -21,7 +23,7 @@ export default function CategorySafetyModal({ mode = 'delete', category, newData
   }, [financeStore.categories, category.id]);
 
   const handleBackup = () => {
-    exportData(financeStore);
+    exportData(financeStore, productivityStore);
     setStep(2);
   };
 
